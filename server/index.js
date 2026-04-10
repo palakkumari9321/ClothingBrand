@@ -9,6 +9,20 @@ import {
   Login,
   Register,
 } from "./controllers/User.js";
+import {
+  createProduct,
+  deleteProduct,
+  getAllProducts,
+  getProductById,
+  updateProduct,
+} from "./controllers/Product.js";
+import {
+  createCategory,
+  deleteCategory,
+  getCategories,
+  getCategoryById,
+  updateCategory,
+} from "./controllers/Category.js";
 
 // Load env variables
 dotenv.config();
@@ -33,6 +47,20 @@ app.post("/login", Login);
 app.put("/editProfile", EditProfile);
 app.put("/changePassword", ChangePassword);
 app.get("/getUsers", GetAllUsers);
+
+//Category Module
+app.post("/category", createCategory);
+app.get("/getcategory", getCategories);
+app.get("/:id", getCategoryById);
+app.put("/update", updateCategory);
+app.delete("/delete", deleteCategory);
+
+//Product Module
+app.post("/create", createProduct);
+app.get("/getall", getAllProducts);
+app.get("/:id", getProductById);
+app.put("/:id", updateProduct);
+app.delete("/:id", deleteProduct);
 
 // Test Route
 app.get("/", (req, res) => {
