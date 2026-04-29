@@ -13,6 +13,7 @@ const UserSchema = mongoose.Schema(
     email: {
       type: String,
       required: true,
+      unique: true,
     },
     password: {
       type: String,
@@ -20,14 +21,12 @@ const UserSchema = mongoose.Schema(
     },
     role: {
       type: String,
+      enum: ["user", "admin"],
       default: "user",
-    },
-    profilePic: {
-      type: String,
     },
   },
   { timestamps: true },
 ); //STRUCTURE OD DATABASE
 
-const UserModel = mongoose.model("user", UserSchema); //MODEL CREATE
+const UserModel = mongoose.model("User", UserSchema); //MODEL CREATE
 export default UserModel; //USE ANOTHER FILE

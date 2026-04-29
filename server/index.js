@@ -1,21 +1,22 @@
 import express from "express";
-import mongoose from "mongoose"; //MONGOdB COONECT AND HANDLE
-import cors from "cors"; //ALLOW FROENTEND CAN  TALK TO BACKEND
-import dotenv from "dotenv"; //ENV VARIABLE READ KE LIYE
+import mongoose from "mongoose";
+import cors from "cors";
+import dotenv from "dotenv";
+import https from "https";
+
+// Controllers
+import { Login, Register } from "./controllers/User.js";
+
 import {
-  ChangePassword,
-  EditProfile,
-  GetAllUsers,
-  Login,
-  Register,
-} from "./controllers/User.js";
-import {
+  bulkCreateProducts,
   createProduct,
   deleteProduct,
   getAllProducts,
   getProductById,
+  searchProducts,
   updateProduct,
 } from "./controllers/Product.js";
+
 import {
   createCategory,
   deleteCategory,
@@ -23,54 +24,66 @@ import {
   getCategoryById,
   updateCategory,
 } from "./controllers/Category.js";
+import { isAdmin, isAuthenticated } from "./middleware/Auth.js";
+import { createStripeSession, placeOrderCOD } from "./controllers/Order.js";
 
-// Load env variables
 dotenv.config();
 
 const app = express();
 
-// Middleware
+// Middlewares
 app.use(express.json());
 app.use(cors());
 
 // MongoDB Connection
-try {
-  await mongoose.connect(process.env.DB_URL);
-  console.log("✅ MongoDB Connected");
-} catch (error) {
-  console.log("❌ DB Error:", error.message);
-}
+const connectDB = async () => {
+  try {
+    await mongoose.connect(process.env.DB_URL);
+    console.log("✅ MongoDB Connected");
+  } catch (error) {
+    console.error("❌ DB Connection Error:", error.message);
+    process.exit(1);
+  }
+};
 
-//user module
+connectDB();
+
+/* ================= USER ROUTES ================= */
 app.post("/register", Register);
 app.post("/login", Login);
-app.put("/editProfile", EditProfile);
-app.put("/changePassword", ChangePassword);
-app.get("/getUsers", GetAllUsers);
 
-//Category Module
+/* ================= CATEGORY ROUTES ================= */
 app.post("/category", createCategory);
 app.get("/getcategory", getCategories);
-app.get("/:id", getCategoryById);
-app.put("/update", updateCategory);
-app.delete("/delete", deleteCategory);
+app.get("/category/:id", getCategoryById);
+app.put("/category/:id", updateCategory);
+app.delete("/category/:id", deleteCategory);
 
-//Product Module
-app.post("/create", createProduct);
-app.get("/getall", getAllProducts);
-app.get("/:id", getProductById);
-app.put("/:id", updateProduct);
-app.delete("/:id", deleteProduct);
+/* ================= PRODUCT ROUTES ================= */
+app.post("/product", createProduct);
+app.post("/product/bulk", bulkCreateProducts);
+app.get("/product/search", searchProducts);
+app.get("/product", getAllProducts);
+app.get("/product/:id", getProductById);
+app.put("/product/:id", updateProduct);
+app.delete("/product/:id", deleteProduct);
 
-// Test Route
+/* ================= Admin ROUTE ================= */
+app.post("/product", isAuthenticated, isAdmin, createProduct);
+app.delete("/product/:id", isAuthenticated, isAdmin, deleteProduct);
+
+/* ================= Order Payment ROUTE ================= */
+app.post("/cod", placeOrderCOD);
+app.post("/stripe", createStripeSession);
+
+/* ================= TEST ROUTE ================= */
 app.get("/", (req, res) => {
-  res.send("API is running...");
+  res.send("🚀 API is running...");
 });
 
-// Port
+/* ================= SERVER ================= */
 const PORT = process.env.PORT || 8082;
 
-// Start Server
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
 });

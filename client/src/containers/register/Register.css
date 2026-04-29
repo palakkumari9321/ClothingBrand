@@ -1,0 +1,94 @@
+/* PAGE */
+.auth-page {
+  min-height: calc(100vh - 140px); /* header + footer adjust */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  background: #f8f9fb; /* same clean bg like site */
+  padding: 40px 20px;
+}
+
+/* CARD */
+.auth-card {
+  width: 380px;
+  padding: 40px;
+  border-radius: 12px;
+
+  background: #fff;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+
+  text-align: center;
+}
+
+/* TITLE */
+.auth-card h1 {
+  font-size: 26px;
+  margin-bottom: 8px;
+  color: #222;
+}
+
+.auth-card p {
+  font-size: 14px;
+  color: #777;
+  margin-bottom: 25px;
+}
+
+/* INPUT */
+.auth-card input {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 12px;
+
+  border-radius: 8px;
+  border: 1px solid #ddd;
+
+  font-size: 14px;
+  transition: 0.2s;
+}
+
+.auth-card input:focus {
+  border-color: #000;
+}
+
+/* NAME ROW */
+.name-row {
+  display: flex;
+  gap: 10px;
+}
+
+/* BUTTON */
+.auth-btn {
+  width: 100%;
+  padding: 13px;
+  margin-top: 10px;
+
+  border: none;
+  border-radius: 8px;
+
+  background: #000;
+  color: #fff;
+
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+
+  transition: 0.3s;
+}
+
+.auth-btn:hover {
+  background: #333;
+}
+
+/* TEXT */
+.switch-text {
+  margin-top: 18px;
+  font-size: 14px;
+  color: #555;
+}
+
+.switch-text a {
+  color: #000;
+  font-weight: 600;
+  text-decoration: none;
+}

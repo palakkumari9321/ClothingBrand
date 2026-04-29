@@ -1,5 +1,4 @@
 import mongoose, { Schema } from "mongoose";
-
 const CategorySchema = mongoose.Schema(
   {
     name: {
@@ -10,11 +9,12 @@ const CategorySchema = mongoose.Schema(
       type: String,
       required: true,
       unique: true,
+      lowercase: true,
     },
   },
   { timestamps: true },
 );
 
-const Category = mongoose.model("category", CategorySchema);
+const Category = mongoose.model("Category", CategorySchema);
 
 export default Category;

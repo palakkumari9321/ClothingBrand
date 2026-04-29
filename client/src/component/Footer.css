@@ -1,0 +1,123 @@
+/* MAIN */
+.footer {
+  background: #0f172a; /* solid instead of gradient */
+  color: #e2e8f0;
+  padding: 60px 80px 25px;
+  margin-top: 80px;
+  font-family: "Segoe UI", sans-serif;
+}
+
+/* CONTAINER */
+.footer-container {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 50px;
+}
+
+/* SECTION */
+.footer-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 160px;
+}
+
+/* BRAND */
+.brand h2 {
+  color: #14b8a6; /* teal accent */
+  letter-spacing: 1px;
+}
+
+.brand p {
+  color: #94a3b8;
+  font-size: 14px;
+}
+
+/* LINKS */
+.footer-section a,
+.footer-section p {
+  color: #cbd5e1;
+  text-decoration: none;
+  font-size: 14px;
+  transition: 0.3s;
+}
+
+.footer-section a:hover {
+  color: #14b8a6;
+  transform: translateX(4px);
+}
+
+/* HEADINGS */
+.footer-section h4 {
+  margin-bottom: 12px;
+  font-size: 16px;
+  color: #f8fafc;
+}
+
+/* SOCIAL */
+.social {
+  display: flex;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.social span {
+  background: #1e293b;
+  padding: 10px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.social span:hover {
+  background: #14b8a6;
+  color: white;
+  transform: scale(1.1);
+}
+
+/* NEWSLETTER */
+.newsletter {
+  display: flex;
+  margin-top: 12px;
+}
+
+.newsletter input {
+  padding: 10px;
+  border: none;
+  outline: none;
+  border-radius: 6px 0 0 6px;
+}
+
+.newsletter button {
+  padding: 10px 14px;
+  border: none;
+  background: #14b8a6;
+  color: white;
+  border-radius: 0 6px 6px 0;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.newsletter button:hover {
+  background: #0d9488;
+}
+
+/* DIVIDER */
+.footer hr {
+  margin: 35px 0;
+  border: 0.5px solid #334155;
+}
+
+/* BOTTOM */
+.footer-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.payment span {
+  margin-left: 12px;
+  font-size: 18px;
+}
