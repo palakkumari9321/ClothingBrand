@@ -33,7 +33,7 @@ const orderSchema = new mongoose.Schema(
 
     orderStatus: {
       type: String,
-      enum: ["processing", "shipped", "delivered"],
+      enum: ["processing", "shipped", "delivered", "cancelled"],
       default: "processing",
     },
 
@@ -41,6 +41,7 @@ const orderSchema = new mongoose.Schema(
       name: String,
       phone: String,
       address: String,
+      email: String,
     },
 
     stripeSessionId: String,

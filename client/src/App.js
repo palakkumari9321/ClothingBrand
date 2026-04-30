@@ -21,6 +21,7 @@ import SearchResults from "./containers/searchResult/SearchResults";
 import Checkout from "./containers/checkout/Checkout";
 import Success from "./containers/success/Success";
 import Cancel from "./containers/cancel/Cancel";
+import Order from "./containers/order/Order";
 
 function App() {
   return (
@@ -53,6 +54,7 @@ function App() {
             <Route path="/checkout" element={<Checkout />} />
             <Route path="/success" element={<Success />} />
             <Route path="/cancel" element={<Cancel />} />
+            <Route path="/orders" element={<Order />} />
           </Routes>
           <Footer />
         </div>

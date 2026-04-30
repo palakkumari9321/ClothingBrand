@@ -1,0 +1,229 @@
+/* Everwear — Success Page */
+@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=DM+Sans:wght@400;500;600&display=swap");
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+.success-page {
+  min-height: 100vh;
+  background: #f8f8f6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "Segoe UI", sans-serif;
+  padding: 24px;
+}
+
+/* ── Card ── */
+.success-card {
+  background: #ffffff;
+  border-radius: 4px;
+  padding: 48px 44px 40px;
+  max-width: 460px;
+  width: 100%;
+  text-align: center;
+  border: 1px solid #e8e8e4;
+  animation: fadeUp 0.5s ease forwards;
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ── Logo — matches site header ── */
+.success-logo {
+  font-family: "Segoe UI", sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: #22c55e; /* Everwear green */
+  letter-spacing: -0.5px;
+  margin-bottom: 32px;
+  cursor: pointer;
+  display: inline-block;
+}
+
+/* ── Checkmark ── */
+.check-wrap {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 24px;
+  background: #0f172a; /* site ka dark navy */
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px;
+}
+
+.checkmark {
+  width: 36px;
+  height: 36px;
+}
+
+.checkmark-circle {
+  stroke: #ffffff;
+  stroke-width: 2.5;
+  stroke-dasharray: 166;
+  stroke-dashoffset: 166;
+  animation: strokeCircle 0.55s ease forwards;
+}
+
+.checkmark-tick {
+  stroke: #22c55e;
+  stroke-width: 3.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 48;
+  stroke-dashoffset: 48;
+  animation: strokeTick 0.4s 0.55s ease forwards;
+}
+
+@keyframes strokeCircle {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes strokeTick {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* ── Title ── */
+.success-title {
+  font-family: "Segoe UI", sans-serif;
+  font-size: 26px;
+  font-weight: 800;
+  color: #0f172a;
+  margin-bottom: 10px;
+  letter-spacing: -0.3px;
+}
+
+.success-sub {
+  font-size: 14px;
+  color: #6b7280;
+  line-height: 1.6;
+  margin-bottom: 24px;
+}
+
+/* ── Divider ── */
+.divider {
+  height: 1px;
+  background: #e8e8e4;
+  margin-bottom: 20px;
+}
+
+/* ── Pills ── */
+.info-pills {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.pill {
+  background: #f8f8f6;
+  border: 1px solid #e8e8e4;
+  border-radius: 4px;
+  padding: 10px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #0f172a;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-align: left;
+}
+
+/* ── COD note ── */
+.cod-note {
+  background: #fefce8;
+  border: 1px solid #fde68a;
+  border-radius: 4px;
+  padding: 12px 14px;
+  font-size: 13px;
+  color: #78350f;
+  font-weight: 500;
+  margin-bottom: 24px;
+  text-align: left;
+}
+
+/* ── Buttons — matches site's dark button style ── */
+.success-btns {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.btn-primary {
+  flex: 1;
+  padding: 13px 16px;
+  background: #0f172a; /* site ka dark navy button */
+  color: #ffffff;
+  border: none;
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: "Segoe UI", sans-serif;
+  cursor: pointer;
+  letter-spacing: 0.3px;
+  transition:
+    background 0.2s,
+    transform 0.15s;
+}
+
+.btn-primary:hover {
+  background: #1e293b;
+  transform: translateY(-1px);
+}
+
+.btn-secondary {
+  flex: 1;
+  padding: 13px 16px;
+  background: #ffffff;
+  color: #0f172a;
+  border: 1.5px solid #0f172a;
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: "DM Sans", sans-serif;
+  cursor: pointer;
+  transition:
+    background 0.2s,
+    transform 0.15s;
+}
+
+.btn-secondary:hover {
+  background: #f8f8f6;
+  transform: translateY(-1px);
+}
+
+/* ── Redirect ── */
+.auto-redirect {
+  font-size: 11px;
+  color: #9ca3af;
+  letter-spacing: 0.2px;
+}
+
+/* ── Mobile ── */
+@media (max-width: 480px) {
+  .success-card {
+    padding: 36px 20px 28px;
+  }
+  .success-title {
+    font-size: 22px;
+  }
+  .success-btns {
+    flex-direction: column;
+  }
+}

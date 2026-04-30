@@ -25,7 +25,13 @@ import {
   updateCategory,
 } from "./controllers/Category.js";
 import { isAdmin, isAuthenticated } from "./middleware/Auth.js";
-import { createStripeSession, placeOrderCOD } from "./controllers/Order.js";
+import {
+  cancelOrder,
+  createStripeSession,
+  getMyOrders,
+  placeOrderCOD,
+  stripeWebhook,
+} from "./controllers/Order.js";
 
 dotenv.config();
 
@@ -75,6 +81,14 @@ app.delete("/product/:id", isAuthenticated, isAdmin, deleteProduct);
 /* ================= Order Payment ROUTE ================= */
 app.post("/cod", placeOrderCOD);
 app.post("/stripe", createStripeSession);
+app.post(
+  "/stripe-webhook",
+  express.raw({ type: "application/json" }),
+  stripeWebhook,
+);
+
+app.get("/orders", getMyOrders);
+app.put("/order/:id/cancel", cancelOrder);
 
 /* ================= TEST ROUTE ================= */
 app.get("/", (req, res) => {

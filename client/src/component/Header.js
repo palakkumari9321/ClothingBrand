@@ -202,6 +202,7 @@ function Header() {
 
         <Link to="/collection">Collection</Link>
         <Link to="/trends">Trends</Link>
+        <Link to ="/orders">Orders</Link>
       </nav>
 
       {/* RIGHT ICONS */}
