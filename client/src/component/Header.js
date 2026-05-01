@@ -1,6 +1,7 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import "./Header.css";
 import { Link, useNavigate } from "react-router-dom";
+import { CartContext } from "../context/CartContext";
 
 function Header() {
   const [menu, setMenu] = useState("");
@@ -8,6 +9,7 @@ function Header() {
   const [searchText, setSearchText] = useState("");
   const [results, setResults] = useState([]);
   const searchRef = useRef(null);
+  const { getCartCount } = useContext(CartContext);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -202,7 +204,7 @@ function Header() {
 
         <Link to="/collection">Collection</Link>
         <Link to="/trends">Trends</Link>
-        <Link to ="/orders">Orders</Link>
+        <Link to="/orders">Orders</Link>
       </nav>
 
       {/* RIGHT ICONS */}
@@ -247,6 +249,9 @@ function Header() {
 
         <Link to="/cart" style={{ textDecoration: "none" }}>
           🛒
+          {getCartCount() > 0 && (
+            <span className="cart-badge">{getCartCount()}</span>
+          )}
         </Link>
         <Link to="/wishlist" style={{ textDecoration: "none" }}>
           ❤️

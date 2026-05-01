@@ -1,4 +1,19 @@
-@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Outfit:wght@300;400;500&display=swap");
+/* ===================== EVERWEAR — ORDER PAGE ===================== */
+@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=DM+Sans:wght@300;400;500;600&display=swap");
+
+:root {
+  --black: #111111;
+  --white: #ffffff;
+  --off-white: #f8f7f5;
+  --light-gray: #efefef;
+  --mid-gray: #c0bfbd;
+  --text-muted: #888884;
+  --accent: #111111;
+  --radius: 14px;
+  --card-shadow: 0 2px 20px rgba(0, 0, 0, 0.07);
+  --font-display: "Playfair Display", serif;
+  --font-body: "DM Sans", sans-serif;
+}
 
 * {
   box-sizing: border-box;
@@ -6,326 +21,360 @@
   padding: 0;
 }
 
-.ew-root {
-  font-family: "Segoe UI", sans-serif;
-  padding: 2.5rem 1.5rem;
-  max-width: 720px;
+/* ========== GATE (email entry) ========== */
+.order-gate {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: var(--off-white);
+  font-family: var(--font-body);
+  gap: 20px;
+  padding: 24px;
+}
+
+.order-gate h2 {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  color: var(--black);
+  letter-spacing: -0.5px;
+}
+
+.order-gate input {
+  width: 100%;
+  max-width: 400px;
+  padding: 14px 18px;
+  border: 1.5px solid var(--mid-gray);
+  border-radius: var(--radius);
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  background: var(--white);
+  color: var(--black);
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.order-gate input:focus {
+  border-color: var(--black);
+}
+
+.order-gate button {
+  padding: 14px 36px;
+  background: var(--black);
+  color: var(--white);
+  border: none;
+  border-radius: 999px;
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  letter-spacing: 0.3px;
+  transition:
+    opacity 0.2s,
+    transform 0.15s;
+}
+
+.order-gate button:hover {
+  opacity: 0.85;
+  transform: translateY(-1px);
+}
+
+/* ========== LOADING ========== */
+.loading {
+  text-align: center;
+  padding: 80px 20px;
+  font-family: var(--font-body);
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  letter-spacing: 0.5px;
+  animation: pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}
+
+/* ========== MAIN PAGE ========== */
+.order-page {
+  min-height: 100vh;
+  background: var(--off-white);
+  font-family: var(--font-body);
+  padding: 40px 20px 80px;
+  max-width: 780px;
   margin: 0 auto;
 }
 
-.ew-title {
-  font-family: "Segoe UI", sans-serif;
-  font-size: 34px;
-  font-weight: 500;
-  color: #111;
-  letter-spacing: -0.5px;
-  margin-bottom: 0.25rem;
+.order-page h1 {
+  font-family: var(--font-display);
+  font-size: 2.4rem;
+  color: var(--black);
+  letter-spacing: -0.8px;
+  margin-bottom: 28px;
 }
 
-.ew-sub {
-  font-size: 13px;
-  color: #9ca3af;
-  font-weight: 300;
-  margin-bottom: 2rem;
-  letter-spacing: 0.04em;
+/* ========== SEARCH ========== */
+.search-box {
+  width: 100%;
+  padding: 13px 18px;
+  border: 1.5px solid var(--light-gray);
+  border-radius: var(--radius);
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  background: var(--white);
+  color: var(--black);
+  outline: none;
+  margin-bottom: 18px;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
 }
 
-/* ── Filter Pills ── */
-.pill-bar {
+.search-box:focus {
+  border-color: var(--black);
+  box-shadow: 0 0 0 3px rgba(17, 17, 17, 0.06);
+}
+
+/* ========== FILTERS ========== */
+.filters {
   display: flex;
-  gap: 6px;
   flex-wrap: wrap;
-  margin-bottom: 2rem;
-}
-
-.pill {
-  padding: 5px 16px;
-  border-radius: 30px;
-  font-size: 12px;
-  font-weight: 400;
-  border: 1px solid #e5e7eb;
-  background: transparent;
-  color: #6b7280;
-  cursor: pointer;
-  font-family: "Segoe UI", sans-serif;
-  letter-spacing: 0.03em;
-  transition: all 0.2s;
-}
-
-.pill:hover {
-  border-color: #9ca3af;
-}
-
-.pill.on {
-  background: #111;
-  color: #fff;
-  border-color: #111;
-}
-
-/* ── Card ── */
-.ew-card {
-  background: #fff;
-  border: 1px solid #f0f0f0;
-  border-radius: 16px;
+  gap: 8px;
   margin-bottom: 14px;
-  overflow: hidden;
 }
 
-.card-top {
+.filters button {
+  padding: 7px 18px;
+  border: 1.5px solid var(--light-gray);
+  border-radius: 999px;
+  background: var(--white);
+  color: var(--text-muted);
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  font-weight: 500;
+  cursor: pointer;
+  text-transform: capitalize;
+  letter-spacing: 0.2px;
+  transition: all 0.18s;
+}
+
+.filters button:hover {
+  border-color: var(--black);
+  color: var(--black);
+}
+
+.filters button.active {
+  background: var(--black);
+  border-color: var(--black);
+  color: var(--white);
+}
+
+/* ========== DATE HEADING ========== */
+.date-heading {
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+  margin: 32px 0 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--light-gray);
+}
+
+/* ========== ORDER CARD ========== */
+.order-card {
+  background: var(--white);
+  border-radius: var(--radius);
+  box-shadow: var(--card-shadow);
+  margin-bottom: 16px;
+  overflow: hidden;
+  border: 1px solid transparent;
+  transition:
+    box-shadow 0.2s,
+    border-color 0.2s;
+  animation: fadeUp 0.35s ease both;
+}
+
+.order-card:hover {
+  box-shadow: 0 6px 28px rgba(0, 0, 0, 0.1);
+  border-color: var(--light-gray);
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* — top bar — */
+.order-top {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 14px 18px;
-  border-bottom: 1px solid #f5f5f5;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--light-gray);
+  background: var(--off-white);
 }
 
-.card-top-left {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-}
-
-.oid {
-  font-size: 11px;
-  font-weight: 400;
-  color: #9ca3af;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.odate {
-  font-size: 13px;
-  color: #6b7280;
-}
-
-/* ── Status Badges ── */
-.status-pill {
-  font-size: 10px;
+.order-top span:first-child {
+  font-size: 0.82rem;
+  color: var(--text-muted);
   font-weight: 500;
+  letter-spacing: 0.6px;
+  font-family: "Courier New", monospace;
+}
+
+/* — status badges — */
+.status {
+  font-size: 0.78rem;
+  font-weight: 600;
   padding: 4px 12px;
-  border-radius: 20px;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  border-radius: 999px;
+  letter-spacing: 0.3px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
 }
 
-.s-processing {
-  background: #fef9ec;
-  color: #9a6c00;
-  border: 1px solid #f5d878;
-}
-.s-shipped {
-  background: #eef4ff;
-  color: #1a4fbf;
-  border: 1px solid #b3c9f7;
-}
-.s-delivered {
-  background: #edfaf4;
-  color: #126b3f;
-  border: 1px solid #8ed9b3;
-}
-.s-cancelled {
-  background: #fff0f0;
-  color: #b02020;
-  border: 1px solid #f5b3b3;
+.status.processing {
+  background: #fff7e0;
+  color: #b07800;
 }
 
-/* ── Items ── */
-.items-wrap {
-  padding: 4px 0;
+.status.shipped {
+  background: #e6f0ff;
+  color: #1a52b8;
 }
 
-.item-row {
+.status.delivered {
+  background: #e8f8ee;
+  color: #1a7a40;
+}
+
+.status.cancelled {
+  background: #fdeaea;
+  color: #c02020;
+}
+
+/* — item row — */
+.item {
   display: flex;
   align-items: center;
   gap: 14px;
-  padding: 12px 18px;
-  border-bottom: 1px solid #f9f9f9;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--light-gray);
 }
 
-.item-row:last-child {
+.item:last-of-type {
   border-bottom: none;
 }
 
-.item-thumb {
-  width: 56px;
-  height: 56px;
-  border-radius: 10px;
+.item img {
+  width: 60px;
+  height: 72px;
   object-fit: cover;
-  background: #f5f5f5;
+  border-radius: 8px;
+  background: var(--light-gray);
   flex-shrink: 0;
-  border: 1px solid #efefef;
 }
 
-.item-info {
+.item div {
   flex: 1;
+  min-width: 0;
 }
 
-.item-name {
-  font-size: 13px;
+.item div p {
+  font-size: 0.92rem;
   font-weight: 500;
-  color: #111;
+  color: var(--black);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   margin-bottom: 4px;
 }
 
-.item-meta {
-  font-size: 11px;
-  color: #9ca3af;
-  letter-spacing: 0.02em;
+.item div small {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  font-weight: 400;
 }
 
-.item-price {
-  font-size: 13px;
-  font-weight: 500;
-  color: #111;
+.item > span {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--black);
   flex-shrink: 0;
 }
 
-/* ── Footer ── */
-.card-foot {
+/* — footer — */
+.order-footer {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 14px 18px;
-  background: #fafafa;
+  padding: 14px 20px;
+  background: var(--off-white);
+  border-top: 1px solid var(--light-gray);
 }
 
-.pay-chip {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.pay-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: #d1d5db;
-  flex-shrink: 0;
-}
-
-.pay-label {
-  font-size: 11px;
-  color: #9ca3af;
-  letter-spacing: 0.04em;
-}
-
-.foot-right {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.total {
-  font-family: "Segoe UI", sans-serif;
-  font-size: 22px;
-  font-weight: 500;
-  color: #111;
+.order-footer strong {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--black);
+  font-family: var(--font-display);
 }
 
 .cancel-btn {
-  font-family: "Segoe UI", sans-serif;
-  font-size: 11px;
-  font-weight: 400;
-  padding: 5px 14px;
-  border-radius: 6px;
-  border: 1px solid #f5b3b3;
-  color: #b02020;
-  background: #fff0f0;
+  padding: 8px 20px;
+  background: transparent;
+  color: #c02020;
+  border: 1.5px solid #f0c0c0;
+  border-radius: 999px;
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  font-weight: 600;
   cursor: pointer;
-  letter-spacing: 0.03em;
-  transition: background 0.15s;
+  transition: all 0.18s;
 }
 
 .cancel-btn:hover {
-  background: #ffe0e0;
+  background: #c02020;
+  border-color: #c02020;
+  color: var(--white);
 }
 
-/* ── Empty State ── */
-.ew-empty {
+/* ========== EMPTY ========== */
+.empty {
   text-align: center;
-  padding: 4rem 1rem;
-  border: 1px dashed #e5e7eb;
-  border-radius: 16px;
+  padding: 60px 20px;
+  color: var(--text-muted);
+  font-size: 0.95rem;
 }
 
-.empty-icon {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: #f5f5f5;
-  margin: 0 auto 1rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.empty-icon svg {
-  width: 18px;
-  height: 18px;
-  color: #9ca3af;
-}
-
-.ew-empty h3 {
-  font-family: "Segoe UI", sans-serif;
-  font-size: 20px;
-  font-weight: 500;
-  color: #6b7280;
-  margin-bottom: 0.4rem;
-}
-
-.ew-empty p {
-  font-size: 13px;
-  color: #9ca3af;
-}
-
-/* ── Email Gate ── */
-.ew-gate {
-  max-width: 360px;
-  margin: 4rem auto;
-  text-align: center;
-  font-family: "Segoe UI", sans-serif;
-}
-
-.ew-gate input {
-  width: 100%;
-  padding: 10px 14px;
-  border-radius: 10px;
-  border: 1px solid #e5e7eb;
-  font-size: 14px;
-  font-family: "Segoe UI", sans-serif;
-  margin-bottom: 10px;
-  color: #111;
-  outline: none;
-}
-
-.ew-gate input:focus {
-  border-color: #111;
-}
-
-.ew-submit {
-  width: 100%;
-  padding: 10px;
-  border-radius: 10px;
-  background: #111;
-  color: #fff;
-  font-size: 14px;
-  font-weight: 400;
-  border: none;
-  cursor: pointer;
-  font-family: "Segoe UI", sans-serif;
-  letter-spacing: 0.03em;
-  transition: background 0.15s;
-}
-
-.ew-submit:hover {
-  background: #333;
-}
-
-/* ── Loading ── */
-.ew-loading {
-  text-align: center;
-  padding: 4rem;
-  font-family: "Segoe UI", sans-serif;
-  font-size: 13px;
-  color: #9ca3af;
+/* ========== RESPONSIVE ========== */
+@media (max-width: 520px) {
+  .order-page h1 {
+    font-size: 1.8rem;
+  }
+  .item img {
+    width: 50px;
+    height: 60px;
+  }
+  .order-top,
+  .order-footer,
+  .item {
+    padding-left: 14px;
+    padding-right: 14px;
+  }
 }

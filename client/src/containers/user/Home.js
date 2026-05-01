@@ -8,31 +8,38 @@ function Home() {
   const [email, setEmail] = useState("");
   const [subscribed, setSubscribed] = useState(false);
   const [showTop, setShowTop] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(86400);
 
-  // Fetch products
   useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const res = await fetch("http://localhost:8082/product");
-        const resData = await res.json();
-        const productArray = resData?.data || resData?.results || resData || [];
-        const formatted = productArray.map((item) => ({
-          _id: item._id || item.id,
-          name: item.name || item.title || "No Name",
-          price: item.price || 0,
-          image:
-            item.image ||
-            item.imageUrl ||
-            item.images?.[0] ||
-            "https://via.placeholder.com/150",
-          isNew: Math.random() > 0.5, // randomly mark some as new
-        }));
-        setProducts(formatted);
-      } catch (err) {
-        console.log(err);
-      }
-    };
-    fetchProducts();
+    const timer = setInterval(() => {
+      setTimeLeft((prev) => (prev > 0 ? prev - 1 : 0));
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, []);
+
+  const formatTime = () => {
+    const h = Math.floor(timeLeft / 3600);
+    const m = Math.floor((timeLeft % 3600) / 60);
+    const s = timeLeft % 60;
+    return `${h}h ${m}m ${s}s`;
+  };
+  useEffect(() => {
+    const saved = localStorage.getItem("trendingProducts");
+
+    if (saved) {
+      const data = JSON.parse(saved);
+
+      const formatted = data.map((item) => ({
+        _id: item._id,
+        name: item.name,
+        price: item.price,
+        image: Array.isArray(item.images) ? item.images[0] : item.images,
+        isNew: true, // optional
+      }));
+
+      setProducts(formatted);
+    }
   }, []);
 
   // Back to top visibility
@@ -174,7 +181,7 @@ function Home() {
         </div>
         <div className="product-grid">
           {products.length > 0 ? (
-            products.slice(0, 6).map((item) => (
+            products.slice(0, 10).map((item) => (
               <div
                 className="product-card"
                 key={item._id}
@@ -188,6 +195,10 @@ function Home() {
                   </div>
                 </div>
                 <p>{item.name}</p>
+                <div className="rating">
+                  ⭐ 4.{Math.floor(Math.random() * 5)} (
+                  {Math.floor(Math.random() * 200)} reviews)
+                </div>
                 <span>₹{item.price}</span>
               </div>
             ))

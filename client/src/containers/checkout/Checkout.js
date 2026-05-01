@@ -1,12 +1,12 @@
 import React, { useContext, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { CartContext } from "../../context/CartContext";
 import "./Checkout.css";
 
 function Checkout() {
   const { cart, setCart } = useContext(CartContext);
   const navigate = useNavigate();
-
+  const location = useLocation();
   const [paymentMethod, setPaymentMethod] = useState("cod");
   const [loading, setLoading] = useState(false);
 
@@ -26,12 +26,18 @@ function Checkout() {
     setShakeCard(true);
     setTimeout(() => setShakeCard(false), 450);
   };
-
+  // check type
+  const isBuyNow =
+    new URLSearchParams(location.search).get("type") === "buynow";
+  // get items
+  const items = isBuyNow
+    ? JSON.parse(localStorage.getItem("buyNowItem")) || []
+    : cart;
   const getQty = (item) => item.qty || item.quantity || 1;
   const getPrice = (item) =>
     parseFloat(item.discountedPrice || item.price || item.Price || 0);
 
-  const subtotal = cart.reduce(
+  const subtotal = items.reduce(
     (sum, item) => sum + getPrice(item) * getQty(item),
     0,
   );
@@ -39,43 +45,56 @@ function Checkout() {
   const total = subtotal + deliveryFee;
 
   const handleOrder = async () => {
-    // ✅ CHANGE 2: email validation bhi add kiya
     if (!form.name || !form.phone || !form.email || !form.address) {
       triggerShake();
       return;
     }
+
+    if (items.length === 0) {
+      alert("No items to order");
+      return;
+    }
+
     setLoading(true);
 
     try {
+      const payload = {
+        cart: items, // ✅ ALWAYS items
+        ...form,
+      };
+
+      // 🔥 COD
       if (paymentMethod === "cod") {
         const res = await fetch("http://localhost:8082/cod", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ cart, ...form }), // email automatically jayega
+          body: JSON.stringify(payload),
         });
+
         const data = await res.json();
+
         if (data.success) {
-          localStorage.setItem("userEmail", form.email);
-          setCart([]);
-          navigate("/success");
+          handleSuccess();
         } else {
-          alert(data.message || "Order failed. Try again.");
+          alert(data.message || "Order failed");
         }
       }
 
+      // 🔥 STRIPE
       if (paymentMethod === "stripe") {
         const res = await fetch("http://localhost:8082/stripe", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ cart, ...form }), // email automatically jayega
+          body: JSON.stringify(payload),
         });
+
         const data = await res.json();
 
         if (data.url) {
           localStorage.setItem("userEmail", form.email);
           window.location.href = data.url;
         } else {
-          alert(data.error || "Stripe error. Try again.");
+          alert(data.error || "Payment failed");
         }
       }
     } catch (err) {
@@ -83,6 +102,17 @@ function Checkout() {
     } finally {
       setLoading(false);
     }
+  };
+  const handleSuccess = () => {
+    localStorage.setItem("userEmail", form.email);
+
+    if (isBuyNow) {
+      localStorage.removeItem("buyNowItem"); // ✅ only 1 item clear
+    } else {
+      setCart([]); // ✅ full cart clear
+    }
+
+    navigate("/success");
   };
 
   return (
@@ -93,15 +123,15 @@ function Checkout() {
           <div className="summary-header">
             <h2>Order Summary</h2>
             <span className="item-count">
-              {cart.length} item{cart.length !== 1 ? "s" : ""}
+              {items.length} item{items.length !== 1 ? "s" : ""}
             </span>
           </div>
 
           <div className="summary-items">
-            {cart.length === 0 ? (
+            {items.length === 0 ? (
               <p className="empty-cart">Your cart is empty.</p>
             ) : (
-              cart.map((item, idx) => (
+              items.map((item, idx) => (
                 <div className="summary-item" key={idx}>
                   <div className="item-img-wrap">
                     {item.image || item.images?.[0] ? (

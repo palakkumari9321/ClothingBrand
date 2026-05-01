@@ -4,15 +4,36 @@ import { onOrderConfirmed } from "../services/OrderNotification.js";
 
 const getDeliveryCharge = (subtotal) => (subtotal > 0 ? 50 : 0);
 
-// ════════════════════════════════════════
-// 🟢 COD ORDER
-// ════════════════════════════════════════
+// ─────────────────────────────────────────
+// Helper — Estimated delivery date
+// ─────────────────────────────────────────
+const getEstimatedDelivery = (daysFromNow = 4) => {
+  const date = new Date();
+  date.setDate(date.getDate() + daysFromNow);
+  return date.toLocaleDateString("en-IN", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+};
+
+const mapCartItems = (cart) =>
+  cart.map((item) => ({
+    product: item._id,
+    name: item.name,
+    price: item.price,
+    image: item.images?.[0] || item.image || "",
+    qty: item.qty || 1,
+    size: item.selectedSize || "",
+  }));
+
+//  COD ORDER
 export const placeOrderCOD = async (req, res) => {
   try {
-    const { cart, name, phone, address, email } = req.body; // ← email bhi lo
+    const { cart, name, phone, address, email } = req.body;
 
     if (!cart || cart.length === 0)
-      return res.status(400).json({ message: "Cart empty" });
+      return res.status(400).json({ message: "Cart is empty" });
 
     if (!name || !phone || !address)
       return res.status(400).json({ message: "Missing delivery details" });
@@ -22,28 +43,20 @@ export const placeOrderCOD = async (req, res) => {
       0,
     );
     const deliveryCharge = getDeliveryCharge(subtotal);
+    const totalAmount = subtotal + deliveryCharge;
 
-    const order = new Order({
-      items: cart.map((item) => ({
-        product: item._id,
-        name: item.name,
-        price: item.price,
-        image: item.images?.[0] || item.image || "",
-        qty: item.qty || 1,
-        size: item.selectedSize || "",
-      })),
+    const order = await new Order({
+      items: mapCartItems(cart),
       subtotal,
       deliveryCharge,
-      totalAmount: subtotal + deliveryCharge,
+      totalAmount,
       paymentMethod: "COD",
       paymentStatus: "pending",
-      customer: { name, phone, address, email }, // ← email save karo
-    });
+      customer: { name, phone, address, email },
+    }).save();
 
-    await order.save();
-
-    // ✅ COD confirm hote hi — SMS + Call + Email bhejo
-    const notifOrder = {
+    // Fire-and-forget notification
+    onOrderConfirmed({
       id: order._id.toString(),
       customerName: name,
       customerPhone: phone.startsWith("+") ? phone : `+91${phone}`,
@@ -54,113 +67,102 @@ export const placeOrderCOD = async (req, res) => {
         qty: i.qty || 1,
         price: i.price,
       })),
-      total: subtotal + deliveryCharge,
-      address: address,
-      deliveryDate: getEstimatedDelivery(), // helper neeche hai
+      total: totalAmount,
+      address,
+      paymentMethod: "cod",
+      deliveryDate: getEstimatedDelivery(),
       trackingUrl: `${process.env.CLIENT_URL}/track/${order._id}`,
-    };
+    }).catch((err) => console.error("🔴 COD notification error:", err));
 
-    // Fire-and-forget — response wait nahi karega
-    onOrderConfirmed(notifOrder).catch((err) =>
-      console.error("🔴 COD notification error:", err),
-    );
-
-    res.json({ success: true });
+    return res.status(201).json({ success: true, orderId: order._id });
   } catch (err) {
     console.error("COD ERROR:", err);
-    res.status(500).json({ error: err.message });
+    return res.status(500).json({ error: err.message });
   }
 };
-
-// ════════════════════════════════════════
-// 💳 STRIPE — Save Order First, Then Session
+// 💳 STRIPE — Session banao
 // ════════════════════════════════════════
 export const createStripeSession = async (req, res) => {
   try {
     const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
-    const { cart, name, phone, address, email } = req.body; // ← email bhi lo
+    const { cart, name, phone, address, email } = req.body;
 
     if (!cart || cart.length === 0)
-      return res.status(400).json({ error: "Cart empty" });
+      return res.status(400).json({ error: "Cart is empty" });
 
     const subtotal = cart.reduce(
       (sum, item) => sum + (item.price || 0) * (item.qty || 1),
       0,
     );
     const deliveryCharge = getDeliveryCharge(subtotal);
+    const totalAmount = subtotal + deliveryCharge;
 
-    // Step 1: Order DB mein save karo (pending)
-    const order = new Order({
-      items: cart.map((item) => ({
-        product: item._id,
-        name: item.name,
-        price: item.price,
-        image: item.images?.[0] || item.image || "",
-        qty: item.qty || 1,
-        size: item.selectedSize || "",
-      })),
+    // Step 1: Pending order save karo
+    const order = await new Order({
+      items: mapCartItems(cart),
       subtotal,
       deliveryCharge,
-      totalAmount: subtotal + deliveryCharge,
+      totalAmount,
       paymentMethod: "STRIPE",
       paymentStatus: "pending",
       customer: {
         name: name || "",
         phone: phone || "",
         address: address || "",
-        email: email || "", // ← email save karo
+        email: email || "",
       },
-    });
+    }).save();
 
-    await order.save();
-
-    // Step 2: Line items
-    const line_items = cart.map((item) => ({
-      price_data: {
-        currency: "inr",
-        product_data: { name: item.name || "Product" },
-        unit_amount: Math.round((item.price || 0) * 100),
-      },
-      quantity: item.qty || 1,
-    }));
-
-    if (deliveryCharge > 0) {
-      line_items.push({
+    // Step 2: Stripe line items
+    const line_items = [
+      ...cart.map((item) => ({
         price_data: {
           currency: "inr",
-          product_data: { name: "Delivery Charge" },
-          unit_amount: deliveryCharge * 100,
+          product_data: { name: item.name || "Product" },
+          unit_amount: Math.round((item.price || 0) * 100),
         },
-        quantity: 1,
-      });
-    }
+        quantity: item.qty || 1,
+      })),
+      ...(deliveryCharge > 0
+        ? [
+            {
+              price_data: {
+                currency: "inr",
+                product_data: { name: "Delivery Charge" },
+                unit_amount: deliveryCharge * 100,
+              },
+              quantity: 1,
+            },
+          ]
+        : []),
+    ];
 
+    // Step 3: Stripe session
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
       mode: "payment",
       line_items,
       metadata: {
         orderId: order._id.toString(),
-        // ⬇ Webhook mein customer data chahiye hoga notification ke liye
         customerName: name || "",
         customerPhone: phone || "",
         customerEmail: email || "",
         customerAddress: address || "",
-        total: (subtotal + deliveryCharge).toString(),
+        total: totalAmount.toString(),
       },
-      success_url: `${process.env.CLIENT_URL}/success`,
+      success_url: `${process.env.CLIENT_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${process.env.CLIENT_URL}/cancel`,
     });
 
-    res.json({ id: session.id, url: session.url });
+    return res.status(200).json({ id: session.id, url: session.url });
   } catch (err) {
     console.error("Stripe Error:", err.message);
-    res.status(500).json({ error: err.message });
+    return res.status(500).json({ error: err.message });
   }
 };
 
 // ════════════════════════════════════════
-// 🔔 STRIPE WEBHOOK — Payment ke baad order update + Notification
+// 🔔 STRIPE WEBHOOK
 // ════════════════════════════════════════
 export const stripeWebhook = async (req, res) => {
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
@@ -183,19 +185,18 @@ export const stripeWebhook = async (req, res) => {
     const orderId = session.metadata?.orderId;
 
     if (orderId) {
-      // Step 1: Order paid mark karo
       const updatedOrder = await Order.findByIdAndUpdate(
         orderId,
         { paymentStatus: "paid", stripeSessionId: session.id },
-        { new: true }, // ← updated doc wapas lo
+        { new: true },
       );
+
       console.log("✅ Order marked paid:", orderId);
 
-      // Step 2: ✅ Payment confirm hone ke BAAD notification bhejo
       if (updatedOrder) {
         const meta = session.metadata;
 
-        const notifOrder = {
+        onOrderConfirmed({
           id: orderId,
           customerName:
             meta.customerName || updatedOrder.customer?.name || "Customer",
@@ -213,51 +214,31 @@ export const stripeWebhook = async (req, res) => {
           address: meta.customerAddress || updatedOrder.customer?.address || "",
           deliveryDate: getEstimatedDelivery(),
           trackingUrl: `${process.env.CLIENT_URL}/track/${orderId}`,
-        };
-
-        onOrderConfirmed(notifOrder).catch((err) =>
-          console.error("🔴 Stripe notification error:", err),
-        );
+        }).catch((err) => console.error("🔴 Stripe notification error:", err));
       }
     }
   }
 
-  res.json({ received: true });
+  return res.json({ received: true });
 };
 
 // ════════════════════════════════════════
-// 🗓 Helper — Estimated delivery date
-// ════════════════════════════════════════
-function getEstimatedDelivery(daysFromNow = 4) {
-  const date = new Date();
-  date.setDate(date.getDate() + daysFromNow);
-  return date.toLocaleDateString("en-IN", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
-}
-
-// ════════════════════════════════════════
-// 📦 MY ORDERS — Email se fetch
+// 📦 GET MY ORDERS — Email se fetch
 // ════════════════════════════════════════
 export const getMyOrders = async (req, res) => {
   try {
     const { email } = req.query;
 
-    if (!email) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Email required hai" });
-    }
+    if (!email) return res.status(400).json({ message: "Email is required" });
 
-    const orders = await Order.find({ "customer.email": email }).sort({
-      createdAt: -1,
-    });
+    const orders = await Order.find({
+      "customer.email": email.toLowerCase().trim(),
+    }).sort({ createdAt: -1 });
 
-    res.json({ success: true, orders });
-  } catch (err) {
-    res.status(500).json({ success: false, message: "Server error" });
+    return res.status(200).json({ orders });
+  } catch (error) {
+    console.error("getMyOrders error:", error);
+    return res.status(500).json({ message: "Server error" });
   }
 };
 
@@ -266,39 +247,31 @@ export const getMyOrders = async (req, res) => {
 // ════════════════════════════════════════
 export const cancelOrder = async (req, res) => {
   try {
-    const order = await Order.findById(req.params.id);
+    const { id } = req.params;
 
-    if (!order) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Order nahi mila" });
-    }
+    const order = await Order.findById(id);
 
-    if (order.orderStatus === "delivered") {
+    if (!order) return res.status(404).json({ message: "Order not found" });
+
+    if (order.orderStatus !== "processing")
       return res.status(400).json({
-        success: false,
-        message: "Delivered order cancel nahi ho sakta",
+        message: `Order cannot be cancelled. Current status: ${order.orderStatus}`,
       });
-    }
-
-    if (order.orderStatus === "cancelled") {
-      return res
-        .status(400)
-        .json({ success: false, message: "Pehle se cancel hai" });
-    }
-
-    if (order.paymentMethod === "STRIPE" && order.paymentStatus === "paid") {
-      return res.status(400).json({
-        success: false,
-        message: "Paid order cancel nahi ho sakta. Support se contact karo.",
-      });
-    }
 
     order.orderStatus = "cancelled";
+    order.cancelledAt = new Date();
+    order.cancelReason = req.body?.reason || "Cancelled by customer";
+
     await order.save();
 
-    res.json({ success: true, message: "Order cancel ho gaya" });
-  } catch (err) {
-    res.status(500).json({ success: false, message: "Server error" });
+    return res
+      .status(200)
+      .json({ message: "Order cancelled successfully", order });
+  } catch (error) {
+    if (error.name === "CastError")
+      return res.status(400).json({ message: "Invalid order ID" });
+
+    console.error("cancelOrder error:", error);
+    return res.status(500).json({ message: "Server error" });
   }
 };

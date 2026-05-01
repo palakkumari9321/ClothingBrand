@@ -1,0 +1,96 @@
+/* ===== PAGE ===== */
+.sale {
+  padding: 20px 40px;
+  background: #f9fafb;
+}
+
+/* ===== BANNER ===== */
+.sale-banner {
+  text-align: center;
+  background: linear-gradient(135deg, #14b8a6, #0f766e);
+  color: #fff;
+  padding: 35px;
+  border-radius: 12px;
+  margin-bottom: 25px;
+}
+
+.sale-banner h1 {
+  font-size: 30px;
+}
+
+.sale-banner p {
+  font-size: 14px;
+  opacity: 0.9;
+}
+
+/* ===== GRID ===== */
+.sale-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 20px;
+}
+
+/* ===== CARD ===== */
+.sale-card {
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: 0.3s;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.07);
+}
+
+.sale-card:hover {
+  transform: translateY(-6px);
+}
+
+/* ===== IMAGE ===== */
+.img-box {
+  position: relative;
+}
+
+.img-box img {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+}
+
+/* ===== BADGE ===== */
+.badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: #ef4444;
+  color: #fff;
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 5px;
+}
+
+/* ===== INFO ===== */
+.info {
+  padding: 10px;
+}
+
+.info h4 {
+  font-size: 14px;
+  margin-bottom: 6px;
+}
+
+/* ===== PRICE ===== */
+.price {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.price .new {
+  color: #14b8a6;
+  font-weight: 600;
+}
+
+.price .old {
+  text-decoration: line-through;
+  color: #888;
+  font-size: 13px;
+}

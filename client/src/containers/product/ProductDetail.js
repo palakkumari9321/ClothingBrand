@@ -31,12 +31,17 @@ function ProductDetail() {
     setActiveIdx(i);
     setImgKey((k) => k + 1);
   };
-
   const handleAddToCart = () => {
     if (!selectedSize) return;
+
     addToCart({ ...product, selectedSize });
+
     setAdded(true);
-    setTimeout(() => setAdded(false), 2500);
+
+    // 🔥 redirect after small delay (UX smooth)
+    setTimeout(() => {
+      navigate("/"); // home page
+    }, 800);
   };
   const handleBuyNow = () => {
     if (!selectedSize) {
@@ -45,14 +50,20 @@ function ProductDetail() {
     }
 
     const item = {
-      ...product,
-      selectedSize,
+      _id: product._id,
+      name: product.name,
+      price: product.price,
+      image: product.images?.[0],
       qty: 1,
+      size: selectedSize,
     };
 
-    addToCart(item); // cart me add
-    navigate("/checkout"); // direct checkout
+    // 🔥 IMPORTANT: separate store
+    localStorage.setItem("buyNowItem", JSON.stringify([item]));
+
+    navigate("/checkout?type=buynow");
   };
+
   if (!product)
     return (
       <div className="ew-loader">
@@ -161,15 +172,19 @@ function ProductDetail() {
           </div>
 
           <div className="ew-sizes">
-            {["XS", "S", "M", "L", "XL"].map((s) => (
-              <button
-                key={s}
-                className={`ew-sz ${selectedSize === s ? "ew-sz--on" : ""}`}
-                onClick={() => setSelectedSize(s)}
-              >
-                {s}
-              </button>
-            ))}
+            {product.sizes && product.sizes.length > 0 ? (
+              product.sizes.map((s, i) => (
+                <button
+                  key={i}
+                  className={`ew-sz ${selectedSize === s ? "ew-sz--on" : ""}`}
+                  onClick={() => setSelectedSize(s)}
+                >
+                  {s}
+                </button>
+              ))
+            ) : (
+              <p>No size required</p>
+            )}
           </div>
           {!selectedSize && (
             <p className="ew-sz-hint">Please select a size to continue</p>

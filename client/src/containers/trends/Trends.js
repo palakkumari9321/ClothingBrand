@@ -18,23 +18,49 @@ function Trends() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch("http://localhost:8082/product")
-      .then((res) => res.json())
-      .then((data) => {
-        setProducts(data?.data || []);
-        setLoading(false);
-      })
-      .catch((err) => {
+    const fetchProducts = async () => {
+      try {
+        const res = await fetch("http://localhost:8082/product");
+        const data = await res.json();
+        const allProducts = data?.data || [];
+
+        const savedProducts = localStorage.getItem("trendingProducts");
+        const savedTime = localStorage.getItem("trendingTime");
+
+        const now = Date.now();
+
+        // ⏳ 24 hours = 86400000 ms
+        if (savedProducts && savedTime && now - savedTime < 86400000) {
+          // ✅ Use saved data
+          setProducts(JSON.parse(savedProducts));
+        } else {
+          // 🔥 Generate new random set
+          const shuffled = [...allProducts].sort(() => 0.5 - Math.random());
+          const selected = shuffled.slice(0, 12);
+
+          // 💾 Save new data + time
+          localStorage.setItem("trendingProducts", JSON.stringify(selected));
+          localStorage.setItem("trendingTime", now);
+
+          setProducts(selected);
+        }
+      } catch (err) {
         console.log(err);
+      } finally {
         setLoading(false);
-      });
+      }
+    };
+
+    fetchProducts();
   }, []);
 
-  // Filter + only top 8 trending
+  // ✅ FIXED FILTER (important)
   const filtered = (
     activeTab === "All"
       ? products
-      : products.filter((p) => p.type === activeTab)
+      : products.filter((p) =>
+          p.type?.toLowerCase().includes(activeTab.toLowerCase()),
+        )
   ).slice(0, 8);
 
   if (loading) {
@@ -51,127 +77,56 @@ function Trends() {
 
   return (
     <div className="tr-page">
-      {/* ── Hero Banner ── */}
+      {/* 🔥 Banner */}
       <div className="tr-banner">
-        <div className="tr-banner-text">
-          <p className="tr-eyebrow">What's Hot Right Now</p>
-          <h1 className="tr-heading">
-            Trending
-            <br />
-            This Season
-          </h1>
-          <p className="tr-desc">
-            Handpicked styles flying off the shelves — get them before they're
-            gone.
-          </p>
-        </div>
-        <div className="tr-banner-numbers">
-          <div className="tr-stat">
-            <span className="tr-num">{products.length}+</span>
-            <span className="tr-label">Products</span>
-          </div>
-          <div className="tr-divider" />
-          <div className="tr-stat">
-            <span className="tr-num">6</span>
-            <span className="tr-label">Categories</span>
-          </div>
-          <div className="tr-divider" />
-          <div className="tr-stat">
-            <span className="tr-num">★ 4.8</span>
-            <span className="tr-label">Avg Rating</span>
-          </div>
+        <div>
+          <p>What's Hot Right Now</p>
+          <h1>Trending This Season</h1>
         </div>
       </div>
 
-      {/* ── Filter Tabs ── */}
+      {/* 🔧 Tabs */}
       <div className="tr-tabs">
         {TABS.map((tab) => (
           <button
             key={tab}
-            className={`tr-tab ${activeTab === tab ? "active" : ""}`}
+            className={activeTab === tab ? "active" : ""}
             onClick={() => setActiveTab(tab)}
           >
-            {tab === "All" ? "🔥 All Trends" : tab}
+            {tab === "All" ? "🔥 All" : tab}
           </button>
         ))}
       </div>
 
-      {/* ── Trending Label ── */}
-      <div className="tr-section-label">
-        <span className="tr-fire">🔥</span>
-        <h2>Top Picks</h2>
-        <div className="tr-label-line" />
-      </div>
-
-      {/* ── Grid ── */}
+      {/* 🛍 Grid */}
       {filtered.length > 0 ? (
         <div className="tr-grid">
-          {/* Big featured card — first item */}
+          {/* Featured */}
           <div
-            className="tr-card tr-featured"
+            className="tr-card featured"
             onClick={() => navigate(`/product/${filtered[0]._id}`)}
           >
-            <div className="tr-img-box">
-              <img
-                src={
-                  Array.isArray(filtered[0].images)
-                    ? filtered[0].images[0]
-                    : filtered[0].images
-                }
-                alt={filtered[0].name}
-                onError={(e) => (e.target.src = "/placeholder.jpg")}
-              />
-              <div className="tr-badge">Trending #1</div>
-              <div className="tr-overlay">
-                <button className="tr-quick">Shop Now →</button>
-              </div>
-            </div>
-            <div className="tr-info">
-              <span className="tr-type">{filtered[0].type}</span>
-              <h3>{filtered[0].name}</h3>
-              <p>{filtered[0].description?.slice(0, 65)}...</p>
-              <strong>₹{filtered[0].price}</strong>
-            </div>
+            <img src={filtered[0].images?.[0]} alt="" />
+            <h3>{filtered[0].name}</h3>
+            <p>₹{filtered[0].price}</p>
           </div>
 
-          {/* Remaining cards */}
-          {filtered.slice(1).map((item, i) => (
+          {/* Rest */}
+          {filtered.slice(1).map((item) => (
             <div
               key={item._id}
               className="tr-card"
               onClick={() => navigate(`/product/${item._id}`)}
             >
-              <div className="tr-img-box">
-                <img
-                  src={
-                    Array.isArray(item.images) ? item.images[0] : item.images
-                  }
-                  alt={item.name}
-                  onError={(e) => (e.target.src = "/placeholder.jpg")}
-                />
-                <div className="tr-rank">#{i + 2}</div>
-                <div className="tr-overlay">
-                  <button className="tr-quick">View →</button>
-                </div>
-              </div>
-              <div className="tr-info">
-                <span className="tr-type">{item.type}</span>
-                <h3>{item.name}</h3>
-                <strong>₹{item.price}</strong>
-              </div>
+              <img src={item.images?.[0]} alt="" />
+              <h4>{item.name}</h4>
+              <p>₹{item.price}</p>
             </div>
           ))}
         </div>
       ) : (
-        <div className="tr-empty">No trending products found 😕</div>
+        <p className="tr-empty">No products found</p>
       )}
-
-      {/* ── View All CTA ── */}
-      <div className="tr-cta">
-        <button onClick={() => navigate("/collection")} className="tr-cta-btn">
-          Explore Full Collection →
-        </button>
-      </div>
     </div>
   );
 }

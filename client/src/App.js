@@ -22,6 +22,8 @@ import Checkout from "./containers/checkout/Checkout";
 import Success from "./containers/success/Success";
 import Cancel from "./containers/cancel/Cancel";
 import Order from "./containers/order/Order";
+import Sale from "./containers/sale/Sale";
+import CancelOrder from "./containers/cancel/CancelOrder";
 
 function App() {
   return (
@@ -54,7 +56,9 @@ function App() {
             <Route path="/checkout" element={<Checkout />} />
             <Route path="/success" element={<Success />} />
             <Route path="/cancel" element={<Cancel />} />
+            <Route path="/cancel-order" element={<CancelOrder />} />
             <Route path="/orders" element={<Order />} />
+            <Route path="/sale" element={<Sale />} />
           </Routes>
           <Footer />
         </div>

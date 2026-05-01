@@ -1,229 +1,474 @@
-/* Everwear — Success Page */
-@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=DM+Sans:wght@400;500;600&display=swap");
+/* ─── Google Font ─────────────────────────────────── */
+@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap");
 
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+/* ─── Variables ───────────────────────────────────── */
+:root {
+  --black: #0f0f0f;
+  --white: #ffffff;
+  --gray-50: #fafafa;
+  --gray-100: #f4f4f5;
+  --gray-400: #a1a1aa;
+  --gray-600: #52525b;
+  --green: #10b981;
+  --green-light: #ecfdf5;
+  --amber: #f59e0b;
+  --amber-light: #fffbeb;
+  --stripe-color: #635bff;
+  --stripe-light: #eef2ff;
 }
 
+/* ─── Page ────────────────────────────────────────── */
 .success-page {
   min-height: 100vh;
-  background: #f8f8f6;
+  background: var(--gray-50);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: "Segoe UI", sans-serif;
-  padding: 24px;
+  padding: 24px 16px;
+  font-family: "DM Sans", sans-serif;
+  position: relative;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(16px);
+  transition:
+    opacity 0.6s ease,
+    transform 0.6s ease;
 }
 
-/* ── Card ── */
+.success-page.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ─── Floating Particles ──────────────────────────── */
+.particles {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.particle {
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0.06;
+  animation: float linear infinite;
+}
+
+.p1 {
+  width: 80px;
+  height: 80px;
+  background: #111;
+  top: 10%;
+  left: 5%;
+  animation-duration: 18s;
+}
+.p2 {
+  width: 40px;
+  height: 40px;
+  background: #111;
+  top: 20%;
+  left: 80%;
+  animation-duration: 22s;
+  animation-delay: -4s;
+}
+.p3 {
+  width: 60px;
+  height: 60px;
+  background: #111;
+  top: 60%;
+  left: 15%;
+  animation-duration: 26s;
+  animation-delay: -8s;
+}
+.p4 {
+  width: 100px;
+  height: 100px;
+  background: #111;
+  top: 80%;
+  left: 70%;
+  animation-duration: 20s;
+  animation-delay: -2s;
+}
+.p5 {
+  width: 30px;
+  height: 30px;
+  background: #111;
+  top: 40%;
+  left: 90%;
+  animation-duration: 16s;
+  animation-delay: -6s;
+}
+.p6 {
+  width: 50px;
+  height: 50px;
+  background: #111;
+  top: 5%;
+  left: 50%;
+  animation-duration: 24s;
+  animation-delay: -10s;
+}
+.p7 {
+  width: 70px;
+  height: 70px;
+  background: #111;
+  top: 70%;
+  left: 40%;
+  animation-duration: 19s;
+  animation-delay: -3s;
+}
+.p8 {
+  width: 25px;
+  height: 25px;
+  background: #111;
+  top: 90%;
+  left: 20%;
+  animation-duration: 21s;
+  animation-delay: -7s;
+}
+.p9 {
+  width: 45px;
+  height: 45px;
+  background: #111;
+  top: 30%;
+  left: 30%;
+  animation-duration: 17s;
+  animation-delay: -5s;
+}
+.p10 {
+  width: 55px;
+  height: 55px;
+  background: #111;
+  top: 50%;
+  left: 60%;
+  animation-duration: 23s;
+  animation-delay: -9s;
+}
+.p11 {
+  width: 35px;
+  height: 35px;
+  background: #111;
+  top: 15%;
+  left: 65%;
+  animation-duration: 25s;
+  animation-delay: -1s;
+}
+.p12 {
+  width: 90px;
+  height: 90px;
+  background: #111;
+  top: 85%;
+  left: 5%;
+  animation-duration: 15s;
+  animation-delay: -11s;
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-40px) rotate(180deg);
+  }
+  100% {
+    transform: translateY(0) rotate(360deg);
+  }
+}
+
+/* ─── Card ────────────────────────────────────────── */
 .success-card {
-  background: #ffffff;
-  border-radius: 4px;
-  padding: 48px 44px 40px;
-  max-width: 460px;
+  background: var(--white);
+  border-radius: 24px;
+  padding: 48px 44px;
+  max-width: 520px;
   width: 100%;
+  box-shadow:
+    0 4px 6px rgba(0, 0, 0, 0.04),
+    0 20px 60px rgba(0, 0, 0, 0.08);
+  position: relative;
+  z-index: 1;
   text-align: center;
-  border: 1px solid #e8e8e4;
-  animation: fadeUp 0.5s ease forwards;
 }
 
-@keyframes fadeUp {
-  from {
-    opacity: 0;
-    transform: translateY(24px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* ── Logo — matches site header ── */
+/* ─── Logo ────────────────────────────────────────── */
 .success-logo {
-  font-family: "Segoe UI", sans-serif;
+  font-family: "Playfair Display", Georgia, serif;
   font-size: 22px;
   font-weight: 700;
-  color: #22c55e; /* Everwear green */
-  letter-spacing: -0.5px;
+  letter-spacing: 3px;
+  color: var(--black);
   margin-bottom: 32px;
   cursor: pointer;
-  display: inline-block;
+  text-transform: uppercase;
 }
 
-/* ── Checkmark ── */
-.check-wrap {
-  width: 64px;
-  height: 64px;
-  margin: 0 auto 24px;
-  background: #0f172a; /* site ka dark navy */
+/* ─── Icon ────────────────────────────────────────── */
+.icon-wrap {
+  width: 88px;
+  height: 88px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 14px;
+  margin: 0 auto 28px;
 }
 
+.stripe-icon {
+  background: var(--stripe-light);
+}
+
+.cod-icon {
+  background: var(--green-light);
+}
+
+/* ─── Checkmark SVG ───────────────────────────────── */
 .checkmark {
-  width: 36px;
-  height: 36px;
+  width: 56px;
+  height: 56px;
 }
 
 .checkmark-circle {
-  stroke: #ffffff;
-  stroke-width: 2.5;
+  stroke: var(--stripe-color);
+  stroke-width: 2;
   stroke-dasharray: 166;
   stroke-dashoffset: 166;
-  animation: strokeCircle 0.55s ease forwards;
+  animation: drawCircle 0.8s cubic-bezier(0.65, 0, 0.45, 1) 0.3s forwards;
+}
+
+.checkmark-circle.cod {
+  stroke: var(--green);
 }
 
 .checkmark-tick {
-  stroke: #22c55e;
-  stroke-width: 3.5;
+  stroke: var(--stripe-color);
+  stroke-width: 2.5;
   stroke-linecap: round;
   stroke-linejoin: round;
   stroke-dasharray: 48;
   stroke-dashoffset: 48;
-  animation: strokeTick 0.4s 0.55s ease forwards;
+  animation: drawTick 0.4s cubic-bezier(0.65, 0, 0.45, 1) 1s forwards;
 }
 
-@keyframes strokeCircle {
+.cod-icon .checkmark-tick {
+  stroke: var(--green);
+}
+
+@keyframes drawCircle {
   to {
     stroke-dashoffset: 0;
   }
 }
-@keyframes strokeTick {
+
+@keyframes drawTick {
   to {
     stroke-dashoffset: 0;
   }
 }
 
-/* ── Title ── */
+/* ─── Title ───────────────────────────────────────── */
 .success-title {
-  font-family: "Segoe UI", sans-serif;
-  font-size: 26px;
-  font-weight: 800;
-  color: #0f172a;
-  margin-bottom: 10px;
-  letter-spacing: -0.3px;
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--black);
+  margin: 0 0 12px;
+  line-height: 1.3;
 }
 
 .success-sub {
-  font-size: 14px;
-  color: #6b7280;
-  line-height: 1.6;
+  font-size: 15px;
+  color: var(--gray-600);
+  margin: 0 0 24px;
+  line-height: 1.7;
+}
+
+/* ─── Status Banner ───────────────────────────────── */
+.status-banner {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 20px;
+  border-radius: 14px;
+  text-align: left;
   margin-bottom: 24px;
 }
 
-/* ── Divider ── */
-.divider {
-  height: 1px;
-  background: #e8e8e4;
-  margin-bottom: 20px;
+.stripe-banner {
+  background: var(--stripe-light);
+  border: 1px solid #c7d2fe;
 }
 
-/* ── Pills ── */
+.cod-banner {
+  background: var(--amber-light);
+  border: 1px solid #fde68a;
+}
+
+.banner-icon {
+  font-size: 28px;
+  flex-shrink: 0;
+}
+
+.banner-title {
+  margin: 0 0 2px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--black);
+}
+
+.banner-sub {
+  margin: 0;
+  font-size: 12px;
+  color: var(--gray-600);
+}
+
+/* ─── Divider ─────────────────────────────────────── */
+.divider {
+  height: 1px;
+  background: var(--gray-100);
+  margin: 24px 0;
+}
+
+/* ─── Notification Pills ──────────────────────────── */
+.notif-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--gray-400);
+  font-weight: 600;
+  margin: 0 0 14px;
+}
+
 .info-pills {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 8px;
-  margin-bottom: 20px;
+  gap: 10px;
+  margin-bottom: 4px;
 }
 
 .pill {
-  background: #f8f8f6;
-  border: 1px solid #e8e8e4;
-  border-radius: 4px;
-  padding: 10px 12px;
-  font-size: 12px;
-  font-weight: 600;
-  color: #0f172a;
   display: flex;
   align-items: center;
   gap: 8px;
-  text-align: left;
-}
-
-/* ── COD note ── */
-.cod-note {
-  background: #fefce8;
-  border: 1px solid #fde68a;
-  border-radius: 4px;
-  padding: 12px 14px;
+  background: var(--gray-50);
+  border: 1px solid var(--gray-100);
+  border-radius: 10px;
+  padding: 10px 14px;
   font-size: 13px;
-  color: #78350f;
+  color: var(--gray-600);
   font-weight: 500;
-  margin-bottom: 24px;
-  text-align: left;
+  animation: popIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
 }
 
-/* ── Buttons — matches site's dark button style ── */
+.pill:nth-child(1) {
+  animation-delay: 0.8s;
+}
+.pill:nth-child(2) {
+  animation-delay: 1s;
+}
+.pill:nth-child(3) {
+  animation-delay: 1.2s;
+}
+.pill:nth-child(4) {
+  animation-delay: 1.4s;
+}
+
+@keyframes popIn {
+  from {
+    opacity: 0;
+    transform: scale(0.85);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.pill-icon {
+  font-size: 16px;
+}
+
+/* ─── Buttons ─────────────────────────────────────── */
 .success-btns {
   display: flex;
-  gap: 10px;
+  gap: 12px;
   margin-bottom: 20px;
 }
 
 .btn-primary {
   flex: 1;
-  padding: 13px 16px;
-  background: #0f172a; /* site ka dark navy button */
-  color: #ffffff;
+  background: var(--black);
+  color: var(--white);
   border: none;
-  border-radius: 4px;
-  font-size: 13px;
+  border-radius: 100px;
+  padding: 14px 20px;
+  font-size: 14px;
   font-weight: 600;
-  font-family: "Segoe UI", sans-serif;
   cursor: pointer;
-  letter-spacing: 0.3px;
   transition:
-    background 0.2s,
-    transform 0.15s;
+    opacity 0.2s,
+    transform 0.2s;
+  font-family: "DM Sans", sans-serif;
 }
 
 .btn-primary:hover {
-  background: #1e293b;
+  opacity: 0.85;
   transform: translateY(-1px);
 }
 
 .btn-secondary {
   flex: 1;
-  padding: 13px 16px;
-  background: #ffffff;
-  color: #0f172a;
-  border: 1.5px solid #0f172a;
-  border-radius: 4px;
-  font-size: 13px;
+  background: transparent;
+  color: var(--black);
+  border: 1.5px solid #e4e4e7;
+  border-radius: 100px;
+  padding: 14px 20px;
+  font-size: 14px;
   font-weight: 600;
-  font-family: "DM Sans", sans-serif;
   cursor: pointer;
   transition:
     background 0.2s,
-    transform 0.15s;
+    transform 0.2s;
+  font-family: "DM Sans", sans-serif;
 }
 
 .btn-secondary:hover {
-  background: #f8f8f6;
+  background: var(--gray-50);
   transform: translateY(-1px);
 }
 
-/* ── Redirect ── */
+/* ─── Redirect Note ───────────────────────────────── */
 .auto-redirect {
-  font-size: 11px;
-  color: #9ca3af;
-  letter-spacing: 0.2px;
+  font-size: 13px;
+  color: var(--gray-400);
+  margin: 0;
 }
 
-/* ── Mobile ── */
+.count-badge {
+  display: inline-block;
+  background: var(--gray-100);
+  color: var(--gray-600);
+  border-radius: 20px;
+  padding: 1px 8px;
+  font-weight: 600;
+  font-size: 13px;
+  min-width: 28px;
+}
+
+/* ─── Responsive ──────────────────────────────────── */
 @media (max-width: 480px) {
   .success-card {
-    padding: 36px 20px 28px;
+    padding: 36px 24px;
   }
+
   .success-title {
-    font-size: 22px;
+    font-size: 24px;
   }
+
   .success-btns {
     flex-direction: column;
+  }
+
+  .info-pills {
+    grid-template-columns: 1fr 1fr;
   }
 }

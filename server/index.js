@@ -36,6 +36,7 @@ import {
 dotenv.config();
 
 const app = express();
+app.post("/webhook", express.raw({ type: "application/json" }), stripeWebhook);
 
 // Middlewares
 app.use(express.json());
@@ -81,14 +82,9 @@ app.delete("/product/:id", isAuthenticated, isAdmin, deleteProduct);
 /* ================= Order Payment ROUTE ================= */
 app.post("/cod", placeOrderCOD);
 app.post("/stripe", createStripeSession);
-app.post(
-  "/stripe-webhook",
-  express.raw({ type: "application/json" }),
-  stripeWebhook,
-);
 
 app.get("/orders", getMyOrders);
-app.put("/order/:id/cancel", cancelOrder);
+app.put("/my-orders/:id/cancel", cancelOrder); // fix karo
 
 /* ================= TEST ROUTE ================= */
 app.get("/", (req, res) => {

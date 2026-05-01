@@ -1,28 +1,25 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./Order.css";
 
-const statusMap = {
-  processing: { cls: "s-processing", label: "Processing" },
-  shipped: { cls: "s-shipped", label: "Shipped" },
-  delivered: { cls: "s-delivered", label: "Delivered" },
-  cancelled: { cls: "s-cancelled", label: "Cancelled" },
+const STATUS = {
+  processing: { label: "Processing", icon: "⏳" },
+  shipped: { label: "Shipped", icon: "🚚" },
+  delivered: { label: "Delivered", icon: "✅" },
+  cancelled: { label: "Cancelled", icon: "❌" },
 };
 
-const Order = () => {
+export default function Order() {
+  const navigate = useNavigate();
+
   const [orders, setOrders] = useState([]);
-  const [filter, setFilter] = useState("all");
-  const [loading, setLoading] = useState(true);
   const [email, setEmail] = useState("");
   const [inputEmail, setInputEmail] = useState("");
-
-  useEffect(() => {
-    const saved = localStorage.getItem("userEmail");
-    if (saved) {
-      setEmail(saved);
-      fetchOrders(saved);
-    } else setLoading(false);
-  }, []);
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [dateFilter, setDateFilter] = useState("all");
+  const [search, setSearch] = useState("");
+  const [loading, setLoading] = useState(true);
 
   const fetchOrders = async (userEmail) => {
     try {
@@ -32,151 +29,186 @@ const Order = () => {
       );
       setOrders(res.data.orders || []);
     } catch {
-      alert("Orders load nahi hue");
+      alert("Failed to load orders");
     } finally {
       setLoading(false);
     }
   };
 
+  useEffect(() => {
+    const saved = localStorage.getItem("userEmail");
+    if (saved) {
+      setEmail(saved);
+      fetchOrders(saved);
+    } else setLoading(false);
+  }, []);
+
+  /* Cancel page pe navigate karo — order data saath bhejo */
+  const goToCancel = (order) => {
+    navigate("/cancel-order", { state: { order } });
+  };
+
+  const filteredOrders = useMemo(() => {
+    const now = new Date();
+    return orders
+      .filter((o) => {
+        if (statusFilter !== "all" && o.orderStatus !== statusFilter)
+          return false;
+        const d = new Date(o.createdAt);
+        if (dateFilter === "today")
+          return d.toDateString() === now.toDateString();
+        if (dateFilter === "week") {
+          const w = new Date();
+          w.setDate(now.getDate() - 7);
+          return d >= w;
+        }
+        if (dateFilter === "month")
+          return (
+            d.getMonth() === now.getMonth() &&
+            d.getFullYear() === now.getFullYear()
+          );
+        return true;
+      })
+      .filter((o) => {
+        if (!search.trim()) return true;
+        const q = search.toLowerCase();
+        return (
+          o._id.toLowerCase().includes(q) ||
+          o.items.some((i) => i.name.toLowerCase().includes(q))
+        );
+      });
+  }, [orders, statusFilter, dateFilter, search]);
+
+  const grouped = useMemo(
+    () =>
+      filteredOrders.reduce((acc, order) => {
+        const key = new Date(order.createdAt).toLocaleDateString("en-IN", {
+          day: "2-digit",
+          month: "short",
+          year: "numeric",
+        });
+        (acc[key] = acc[key] || []).push(order);
+        return acc;
+      }, {}),
+    [filteredOrders],
+  );
+
   const handleEmailSubmit = () => {
-    if (!inputEmail.includes("@")) return alert("Valid email daalo");
+    if (!inputEmail.includes("@")) return alert("Enter a valid email");
     localStorage.setItem("userEmail", inputEmail);
     setEmail(inputEmail);
     fetchOrders(inputEmail);
   };
 
-  const cancelOrder = async (id) => {
-    if (!window.confirm("Cancel karna hai?")) return;
-    await axios.put(`http://localhost:8082/api/my-orders/${id}/cancel`);
-    fetchOrders(email);
-  };
-
-  const filtered =
-    filter === "all" ? orders : orders.filter((o) => o.orderStatus === filter);
-
   if (!email) {
     return (
-      <div className="ew-gate">
-        <h2 className="ew-title">My Orders</h2>
-        <p className="ew-sub">Enter your email to view orders</p>
+      <div className="order-gate">
+        <h2>Track Your Orders 📦</h2>
         <input
           type="email"
-          placeholder="you@example.com"
+          placeholder="Enter your email address"
           value={inputEmail}
           onChange={(e) => setInputEmail(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && handleEmailSubmit()}
         />
-        <button className="ew-submit" onClick={handleEmailSubmit}>
-          Show Orders
-        </button>
+        <button onClick={handleEmailSubmit}>View Orders</button>
       </div>
     );
   }
 
-  if (loading) return <p className="ew-loading">Loading...</p>;
+  if (loading) return <p className="loading">Loading your orders…</p>;
 
   return (
-    <div className="ew-root">
-      <h2 className="ew-title">My Orders</h2>
-      <p className="ew-sub">Track and manage your recent purchases</p>
+    <div className="order-page">
+      <h1>My Orders</h1>
 
-      {/* Filter Pills */}
-      <div className="pill-bar">
+      <input
+        className="search-box"
+        type="text"
+        placeholder="🔍  Search by order ID or product name…"
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+      />
+
+      <div className="filters">
         {["all", "processing", "shipped", "delivered", "cancelled"].map((f) => (
           <button
             key={f}
-            className={`pill ${filter === f ? "on" : ""}`}
-            onClick={() => setFilter(f)}
+            className={statusFilter === f ? "active" : ""}
+            onClick={() => setStatusFilter(f)}
           >
+            {f !== "all" && STATUS[f]?.icon + " "}
             {f.charAt(0).toUpperCase() + f.slice(1)}
           </button>
         ))}
       </div>
 
-      {/* Empty State */}
-      {filtered.length === 0 && (
-        <div className="ew-empty">
-          <div className="empty-icon">
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.5"
-            >
-              <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-            </svg>
-          </div>
-          <h3>Nothing here</h3>
-          <p>No orders for this status yet.</p>
-        </div>
+      <div className="filters">
+        {[
+          { key: "all", label: "All Time" },
+          { key: "today", label: "Today" },
+          { key: "week", label: "This Week" },
+          { key: "month", label: "This Month" },
+        ].map(({ key, label }) => (
+          <button
+            key={key}
+            className={dateFilter === key ? "active" : ""}
+            onClick={() => setDateFilter(key)}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+
+      {Object.keys(grouped).length === 0 && (
+        <p className="empty">No orders found 😕</p>
       )}
 
-      {/* Order Cards */}
-      {filtered.map((order) => {
-        const { cls, label } = statusMap[order.orderStatus] || {};
-        const date = new Date(order.createdAt).toLocaleDateString("en-IN", {
-          day: "numeric",
-          month: "long",
-          year: "numeric",
-        });
+      {Object.entries(grouped).map(([date, list]) => (
+        <div key={date}>
+          <h3 className="date-heading">{date}</h3>
 
-        return (
-          <div className="ew-card" key={order._id}>
-            {/* Card Header */}
-            <div className="card-top">
-              <div className="card-top-left">
-                <span className="oid">Order &nbsp;#{order._id.slice(-6)}</span>
-                <span className="odate">{date}</span>
+          {list.map((order) => (
+            <div className="order-card" key={order._id}>
+              <div className="order-top">
+                <span>#{order._id.slice(-8).toUpperCase()}</span>
+                <span className={`status ${order.orderStatus}`}>
+                  {STATUS[order.orderStatus]?.icon}{" "}
+                  {STATUS[order.orderStatus]?.label}
+                </span>
               </div>
-              <span className={`status-pill ${cls}`}>{label}</span>
-            </div>
 
-            {/* Items */}
-            <div className="items-wrap">
               {order.items.map((item, i) => (
-                <div className="item-row" key={i}>
-                  <img
-                    src={item.image}
-                    alt={item.name}
-                    className="item-thumb"
-                  />
-                  <div className="item-info">
-                    <div className="item-name">{item.name}</div>
-                    <div className="item-meta">
-                      Qty {item.qty} &nbsp;·&nbsp; Size {item.size || "N/A"}
-                    </div>
+                <div className="item" key={i}>
+                  <img src={item.image} alt={item.name} />
+                  <div>
+                    <p>{item.name}</p>
+                    <small>
+                      Qty: {item.qty} &nbsp;|&nbsp; Size: {item.size || "N/A"}
+                    </small>
                   </div>
-                  <div className="item-price">
-                    ₹{item.price.toLocaleString("en-IN")}
-                  </div>
+                  <span>₹{item.price.toLocaleString("en-IN")}</span>
                 </div>
               ))}
-            </div>
 
-            {/* Card Footer */}
-            <div className="card-foot">
-              <div className="pay-chip">
-                <div className="pay-dot" />
-                <span className="pay-label">{order.paymentMethod}</span>
-              </div>
-              <div className="foot-right">
+              <div className="order-footer">
+                <strong>
+                  Total: ₹{order.totalAmount.toLocaleString("en-IN")}
+                </strong>
+
                 {order.orderStatus === "processing" && (
                   <button
                     className="cancel-btn"
-                    onClick={() => cancelOrder(order._id)}
+                    onClick={() => goToCancel(order)}
                   >
-                    Cancel order
+                    Cancel Order
                   </button>
                 )}
-                <span className="total">
-                  ₹{order.totalAmount.toLocaleString("en-IN")}
-                </span>
               </div>
             </div>
-          </div>
-        );
-      })}
+          ))}
+        </div>
+      ))}
     </div>
   );
-};
-
-export default Order;
+}
