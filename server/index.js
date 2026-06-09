@@ -5,7 +5,14 @@ import dotenv from "dotenv";
 import https from "https";
 
 // Controllers
-import { Login, Register } from "./controllers/User.js";
+import {
+  Login,
+  Register,
+  getMe,
+  getAllUsers,
+  toggleUserStatus,
+  getDashboardStats,
+} from "./controllers/User.js";
 
 import {
   bulkCreateProducts,
@@ -15,6 +22,7 @@ import {
   getProductById,
   searchProducts,
   updateProduct,
+  addProduct,
 } from "./controllers/Product.js";
 
 import {
@@ -24,13 +32,17 @@ import {
   getCategoryById,
   updateCategory,
 } from "./controllers/Category.js";
+
 import { isAdmin, isAuthenticated } from "./middleware/Auth.js";
+
 import {
   cancelOrder,
   createStripeSession,
   getMyOrders,
   placeOrderCOD,
   stripeWebhook,
+  getAllOrders,
+  updateOrderStatus,
 } from "./controllers/Order.js";
 
 dotenv.config();
@@ -58,6 +70,7 @@ connectDB();
 /* ================= USER ROUTES ================= */
 app.post("/register", Register);
 app.post("/login", Login);
+app.get("/api/auth/me", isAuthenticated, getMe);
 
 /* ================= CATEGORY ROUTES ================= */
 app.post("/category", createCategory);
@@ -67,24 +80,45 @@ app.put("/category/:id", updateCategory);
 app.delete("/category/:id", deleteCategory);
 
 /* ================= PRODUCT ROUTES ================= */
-app.post("/product", createProduct);
 app.post("/product/bulk", bulkCreateProducts);
 app.get("/product/search", searchProducts);
 app.get("/product", getAllProducts);
 app.get("/product/:id", getProductById);
 app.put("/product/:id", updateProduct);
-app.delete("/product/:id", deleteProduct);
 
-/* ================= Admin ROUTE ================= */
-app.post("/product", isAuthenticated, isAdmin, createProduct);
-app.delete("/product/:id", isAuthenticated, isAdmin, deleteProduct);
-
-/* ================= Order Payment ROUTE ================= */
+/* ================= ORDER ROUTES ================= */
 app.post("/cod", placeOrderCOD);
 app.post("/stripe", createStripeSession);
-
 app.get("/orders", getMyOrders);
-app.put("/my-orders/:id/cancel", cancelOrder); // fix karo
+app.put("/my-orders/:id/cancel", cancelOrder);
+
+/* ================= ADMIN ROUTES ================= */
+// Dashboard Stats
+app.get("/api/admin/stats", isAuthenticated, isAdmin, getDashboardStats);
+
+// Admin - Users
+app.get("/api/admin/users", isAuthenticated, isAdmin, getAllUsers);
+app.put(
+  "/api/admin/users/:id/toggle",
+  isAuthenticated,
+  isAdmin,
+  toggleUserStatus,
+);
+
+// Admin - Orders
+app.get("/api/admin/orders", isAuthenticated, isAdmin, getAllOrders);
+app.put(
+  "/api/admin/orders/:id/status",
+  isAuthenticated,
+  isAdmin,
+  updateOrderStatus,
+);
+
+// Admin - Products
+app.get("/api/admin/products", isAuthenticated, isAdmin, getAllProducts);
+app.post("/api/admin/products", isAuthenticated, isAdmin, addProduct);
+app.put("/api/admin/products/:id", isAuthenticated, isAdmin, updateProduct);
+app.delete("/api/admin/products/:id", isAuthenticated, isAdmin, deleteProduct);
 
 /* ================= TEST ROUTE ================= */
 app.get("/", (req, res) => {

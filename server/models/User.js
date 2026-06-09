@@ -24,6 +24,10 @@ const UserSchema = mongoose.Schema(
       enum: ["user", "admin"],
       default: "user",
     },
+    isActive: {
+      type: Boolean,
+      default: true,
+    },
   },
   { timestamps: true },
 ); //STRUCTURE OD DATABASE

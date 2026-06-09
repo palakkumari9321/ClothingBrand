@@ -1,78 +1,306 @@
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&display=swap");
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+body {
+  font-family: "DM Sans", sans-serif;
+}
+
+/* PAGE */
 .auth-page {
   min-height: 100vh;
   display: flex;
-  justify-content: center;
   align-items: center;
-  background: #f0f2f5;
+  justify-content: center;
+  background: #f5f4f1;
+  padding: 1rem;
 }
 
+/* CARD */
 .auth-card {
-  background: white;
-  padding: 40px;
-  border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  background: #ffffff;
+  border-radius: 20px;
+  border: 1px solid #e8e6e1;
+  padding: 2.5rem 2rem;
   width: 100%;
-  max-width: 400px;
+  max-width: 440px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+}
+
+/* HEADER */
+.auth-header {
   text-align: center;
+  margin-bottom: 2rem;
 }
 
-.auth-card h1 {
-  margin-bottom: 6px;
-  font-size: 24px;
+.auth-logo {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  background: #1a1a1a;
+  color: #fff;
+  font-size: 22px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1rem;
 }
 
-.auth-card p {
-  color: #666;
-  margin-bottom: 20px;
+.auth-header h1 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin-bottom: 0.35rem;
+  letter-spacing: -0.3px;
 }
 
-.auth-card form {
+.auth-header p {
+  font-size: 0.9rem;
+  color: #888;
+}
+
+/* TABS */
+.auth-tabs {
+  display: flex;
+  background: #f5f4f1;
+  border-radius: 12px;
+  padding: 4px;
+  margin-bottom: 1.8rem;
+  gap: 4px;
+}
+
+.auth-tab {
+  flex: 1;
+  padding: 0.55rem;
+  border: none;
+  border-radius: 9px;
+  background: transparent;
+  font-family: "DM Sans", sans-serif;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #888;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.auth-tab.active {
+  background: #fff;
+  color: #1a1a1a;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+}
+
+.auth-tab:hover:not(.active) {
+  color: #555;
+}
+
+/* INPUTS */
+.input-group {
   display: flex;
   flex-direction: column;
+  gap: 6px;
+  margin-bottom: 1rem;
+}
+
+.input-group label {
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: #555;
+}
+
+.input-group input {
+  width: 100%;
+  padding: 0.7rem 0.9rem;
+  border: 1.5px solid #e8e6e1;
+  border-radius: 10px;
+  font-family: "DM Sans", sans-serif;
+  font-size: 0.9rem;
+  color: #1a1a1a;
+  background: #fff;
+  outline: none;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
+}
+
+.input-group input::placeholder {
+  color: #bbb;
+}
+
+.input-group input:focus {
+  border-color: #1a1a1a;
+  box-shadow: 0 0 0 3px rgba(26, 26, 26, 0.07);
+}
+
+/* NAME ROW */
+.name-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 12px;
 }
 
-.auth-card input {
-  padding: 12px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  font-size: 14px;
-  outline: none;
-  transition: border 0.2s;
+/* PASSWORD EYE */
+.input-password-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
 }
 
-.auth-card input:focus {
-  border-color: #007bff;
+.input-password-wrap input {
+  width: 100%;
+  padding-right: 2.8rem;
 }
 
-.auth-btn {
-  padding: 12px;
-  background: #007bff;
-  color: white;
+.toggle-eye {
+  position: absolute;
+  right: 10px;
+  background: none;
   border: none;
-  border-radius: 8px;
-  font-size: 16px;
   cursor: pointer;
-  transition: background 0.2s;
+  font-size: 16px;
+  padding: 4px;
+  line-height: 1;
+  opacity: 0.6;
+  transition: opacity 0.2s;
 }
 
-.auth-btn:hover {
-  background: #0056b3;
+.toggle-eye:hover {
+  opacity: 1;
 }
 
+/* FORGOT */
+.forgot-wrap {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: -0.5rem;
+  margin-bottom: 1rem;
+}
+
+.forgot-link {
+  font-size: 0.82rem;
+  color: #1a1a1a;
+  cursor: pointer;
+  font-weight: 500;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+}
+
+.forgot-link:hover {
+  opacity: 1;
+}
+
+/* SUCCESS BOX */
+.success-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0.75rem 1rem;
+  background: #f0fff4;
+  border: 1px solid #86efac;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  color: #1a7a40;
+  margin-bottom: 1rem;
+}
+
+/* ERROR BOX */
+.error-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0.75rem 1rem;
+  background: #fff5f5;
+  border: 1px solid #fecaca;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  color: #c02020;
+  margin-bottom: 1rem;
+}
+
+/* SUBMIT BUTTON */
+.auth-btn {
+  width: 100%;
+  padding: 0.85rem;
+  background: #1a1a1a;
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  font-family: "DM Sans", sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 0.4rem;
+  transition:
+    background 0.2s,
+    transform 0.1s;
+}
+
+.auth-btn:hover:not(:disabled) {
+  background: #333;
+}
+.auth-btn:active:not(:disabled) {
+  transform: scale(0.99);
+}
 .auth-btn:disabled {
-  background: #aaa;
+  opacity: 0.6;
   cursor: not-allowed;
 }
 
-.error-text {
-  color: red;
-  font-size: 13px;
-  text-align: left;
+/* SPINNER */
+.spinner-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
 
-.switch-text {
-  margin-top: 16px;
-  font-size: 14px;
-  color: #555;
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* FOOTER */
+.auth-footer {
+  text-align: center;
+  margin-top: 1.5rem;
+  font-size: 0.875rem;
+  color: #888;
+}
+
+.auth-switch {
+  color: #1a1a1a;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  transition: opacity 0.2s;
+}
+
+.auth-switch:hover {
+  opacity: 0.7;
+}
+
+/* RESPONSIVE */
+@media (max-width: 480px) {
+  .auth-card {
+    padding: 2rem 1.5rem;
+  }
+  .name-row {
+    grid-template-columns: 1fr;
+  }
 }

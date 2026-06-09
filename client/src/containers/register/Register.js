@@ -8,29 +8,21 @@ function Register() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-
   const navigate = useNavigate();
 
   const registerUser = async (e) => {
     e.preventDefault();
 
     if (password !== confirmPassword) {
-      alert("Password not matched!");
+      alert("Passwords do not match!");
       return;
     }
 
     try {
       const res = await fetch("http://localhost:8082/register", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          firstName,
-          lastName,
-          email,
-          password,
-        }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ firstName, lastName, email, password }),
       });
 
       const data = await res.json();
@@ -39,10 +31,10 @@ function Register() {
         alert("Registration Successful 🎉");
         navigate("/login");
       } else {
-        alert(data.message || "Failed!");
+        alert(data.message || "Registration failed!");
       }
     } catch (error) {
-      alert("Server Error");
+      alert("Server Error. Please try again.");
     }
   };
 
@@ -61,7 +53,6 @@ function Register() {
               onChange={(e) => setFirstName(e.target.value)}
               required
             />
-
             <input
               type="text"
               placeholder="Last name"

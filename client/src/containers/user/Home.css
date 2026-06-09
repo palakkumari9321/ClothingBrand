@@ -16,7 +16,7 @@
   background: #1a1a2e;
   overflow: hidden;
   padding: 10px 0;
-  white-space: nowrap;
+  white-space: normal;
 }
 
 .marquee-track {

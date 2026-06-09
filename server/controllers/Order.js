@@ -4,9 +4,6 @@ import { onOrderConfirmed } from "../services/OrderNotification.js";
 
 const getDeliveryCharge = (subtotal) => (subtotal > 0 ? 50 : 0);
 
-// ─────────────────────────────────────────
-// Helper — Estimated delivery date
-// ─────────────────────────────────────────
 const getEstimatedDelivery = (daysFromNow = 4) => {
   const date = new Date();
   date.setDate(date.getDate() + daysFromNow);
@@ -27,7 +24,9 @@ const mapCartItems = (cart) =>
     size: item.selectedSize || "",
   }));
 
-//  COD ORDER
+// ════════════════════════════════════════
+// COD ORDER
+// ════════════════════════════════════════
 export const placeOrderCOD = async (req, res) => {
   try {
     const { cart, name, phone, address, email } = req.body;
@@ -55,7 +54,6 @@ export const placeOrderCOD = async (req, res) => {
       customer: { name, phone, address, email },
     }).save();
 
-    // Fire-and-forget notification
     onOrderConfirmed({
       id: order._id.toString(),
       customerName: name,
@@ -80,7 +78,9 @@ export const placeOrderCOD = async (req, res) => {
     return res.status(500).json({ error: err.message });
   }
 };
-// 💳 STRIPE — Session banao
+
+// ════════════════════════════════════════
+// STRIPE SESSION
 // ════════════════════════════════════════
 export const createStripeSession = async (req, res) => {
   try {
@@ -97,7 +97,6 @@ export const createStripeSession = async (req, res) => {
     const deliveryCharge = getDeliveryCharge(subtotal);
     const totalAmount = subtotal + deliveryCharge;
 
-    // Step 1: Pending order save karo
     const order = await new Order({
       items: mapCartItems(cart),
       subtotal,
@@ -113,7 +112,6 @@ export const createStripeSession = async (req, res) => {
       },
     }).save();
 
-    // Step 2: Stripe line items
     const line_items = [
       ...cart.map((item) => ({
         price_data: {
@@ -137,7 +135,6 @@ export const createStripeSession = async (req, res) => {
         : []),
     ];
 
-    // Step 3: Stripe session
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
       mode: "payment",
@@ -162,7 +159,7 @@ export const createStripeSession = async (req, res) => {
 };
 
 // ════════════════════════════════════════
-// 🔔 STRIPE WEBHOOK
+// STRIPE WEBHOOK
 // ════════════════════════════════════════
 export const stripeWebhook = async (req, res) => {
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
@@ -191,11 +188,8 @@ export const stripeWebhook = async (req, res) => {
         { new: true },
       );
 
-      console.log("✅ Order marked paid:", orderId);
-
       if (updatedOrder) {
         const meta = session.metadata;
-
         onOrderConfirmed({
           id: orderId,
           customerName:
@@ -223,12 +217,11 @@ export const stripeWebhook = async (req, res) => {
 };
 
 // ════════════════════════════════════════
-// 📦 GET MY ORDERS — Email se fetch
+// GET MY ORDERS — email se
 // ════════════════════════════════════════
 export const getMyOrders = async (req, res) => {
   try {
     const { email } = req.query;
-
     if (!email) return res.status(400).json({ message: "Email is required" });
 
     const orders = await Order.find({
@@ -243,12 +236,11 @@ export const getMyOrders = async (req, res) => {
 };
 
 // ════════════════════════════════════════
-// ❌ CANCEL ORDER
+// CANCEL ORDER
 // ════════════════════════════════════════
 export const cancelOrder = async (req, res) => {
   try {
     const { id } = req.params;
-
     const order = await Order.findById(id);
 
     if (!order) return res.status(404).json({ message: "Order not found" });
@@ -261,7 +253,6 @@ export const cancelOrder = async (req, res) => {
     order.orderStatus = "cancelled";
     order.cancelledAt = new Date();
     order.cancelReason = req.body?.reason || "Cancelled by customer";
-
     await order.save();
 
     return res
@@ -272,6 +263,45 @@ export const cancelOrder = async (req, res) => {
       return res.status(400).json({ message: "Invalid order ID" });
 
     console.error("cancelOrder error:", error);
+    return res.status(500).json({ message: "Server error" });
+  }
+};
+
+// ════════════════════════════════════════
+// ✅ ADMIN — GET ALL ORDERS
+// ════════════════════════════════════════
+export const getAllOrders = async (req, res) => {
+  try {
+    const orders = await Order.find().sort({ createdAt: -1 });
+    return res.status(200).json({ orders });
+  } catch (error) {
+    console.error("getAllOrders error:", error);
+    return res.status(500).json({ message: "Server error" });
+  }
+};
+
+// ════════════════════════════════════════
+// ✅ ADMIN — UPDATE ORDER STATUS
+// ════════════════════════════════════════
+export const updateOrderStatus = async (req, res) => {
+  try {
+    const { status } = req.body;
+    const allowed = ["processing", "shipped", "delivered", "cancelled"];
+
+    if (!allowed.includes(status))
+      return res.status(400).json({ message: "Invalid status" });
+
+    const order = await Order.findByIdAndUpdate(
+      req.params.id,
+      { orderStatus: status },
+      { new: true },
+    );
+
+    if (!order) return res.status(404).json({ message: "Order not found" });
+
+    return res.status(200).json({ message: "Status updated ✅", order });
+  } catch (error) {
+    console.error("updateOrderStatus error:", error);
     return res.status(500).json({ message: "Server error" });
   }
 };
